@@ -2,32 +2,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center">
+    android:padding="24dp">
 
     <TextView
-        android:text="Iniciar sesión"
-        android:textSize="28sp"
+        android:text="Hola, Usuario"
+        android:textSize="26sp"
         android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <EditText
-        android:id="@+id/edtUsuario"
-        android:hint="Usuario"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <EditText
-        android:id="@+id/edtPassword"
-        android:hint="Contraseña"
-        android:inputType="textPassword"
+    <Button
+        android:id="@+id/btnRegistrarFactura"
+        android:text="Registrar factura"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <Button
-        android:id="@+id/btnLogin"
-        android:text="Ingresar"
+        android:id="@+id/btnVerFacturas"
+        android:text="Ver facturas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btnMateriales"
+        android:text="Materiales"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
