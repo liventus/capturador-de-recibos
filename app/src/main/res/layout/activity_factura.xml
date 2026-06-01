@@ -17,16 +17,24 @@
             android:textSize="24sp"
             android:textStyle="bold"/>
 
-        <!-- FOTO FACTURA -->
-
-        <ImageView
-            android:id="@+id/imgFactura"
+        <!-- VISTA PREVIA DE CÁMARA -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_marginTop="16dp"
-            android:background="#EEEEEE"
-            android:scaleType="centerCrop"
-            android:src="@android:drawable/ic_menu_camera"/>
+            android:layout_height="250dp"
+            android:layout_marginTop="16dp">
+
+            <androidx.camera.view.PreviewView
+                android:id="@+id/viewFinder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:id="@+id/imgFactura"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+        </FrameLayout>
 
         <Button
             android:id="@+id/btnTomarFoto"
