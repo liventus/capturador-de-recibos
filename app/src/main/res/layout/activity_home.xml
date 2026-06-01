@@ -1,32 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:background="#FAF8FF"
+    android:padding="20dp">
 
     <TextView
-        android:text="Hola, Usuario"
-        android:textSize="26sp"
-        android:textStyle="bold"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="Hola, Usuario"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#1F1F1F" />
 
-    <Button
-        android:id="@+id/btnRegistrarFactura"
-        android:text="Registrar factura"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="¿Qué deseas hacer hoy?"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginTop="6dp" />
 
-    <Button
-        android:id="@+id/btnVerFacturas"
-        android:text="Ver facturas"
+    <GridLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:columnCount="2"
+        android:layout_marginTop="28dp">
 
-    <Button
-        android:id="@+id/btnMateriales"
-        android:text="Materiales"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <LinearLayout
+            android:id="@+id/cardRegistrarCompra"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="8dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_card_home"
+            android:padding="12dp">
+
+            <TextView
+                android:text="📄"
+                android:textSize="34sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="Registrar compra"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="Agregar nueva compra"
+                android:textSize="12sp"
+                android:textColor="#777777"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/cardVerFacturas"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="8dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_card_home"
+            android:padding="12dp">
+
+            <TextView
+                android:text="🧾"
+                android:textSize="34sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="Ver facturas"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="Listado de facturas"
+                android:textSize="12sp"
+                android:textColor="#777777"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+
+
+
+
+    </GridLayout>
 
 </LinearLayout>
