@@ -9,16 +9,19 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbarHome"
+
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="80dp"
             android:background="#5E35B1"
+            android:paddingTop="24dp"
+            app:popupTheme="@style/ThemeOverlay.Material3.Light"
             app:title="MI ROL"
-            app:titleTextColor="#FFFFFF"
-            app:popupTheme="@style/ThemeOverlay.Material3.Light" />
+            app:titleTextColor="#FFFFFF" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
