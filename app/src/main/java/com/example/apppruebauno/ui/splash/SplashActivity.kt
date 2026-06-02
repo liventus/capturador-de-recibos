@@ -22,7 +22,7 @@ class SplashActivity : AppCompatActivity() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             viewModel.validarSesion()
-        }, 4000)
+        }, 2000)
     }
 
     private fun observarViewModel() {
