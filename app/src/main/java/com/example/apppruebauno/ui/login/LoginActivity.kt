@@ -7,9 +7,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.apppruebauno.R
+import com.example.apppruebauno.data.network.RetrofitClient
 import com.example.apppruebauno.ui.home.HomeActivity
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
@@ -41,17 +44,13 @@ class LoginActivity : AppCompatActivity() {
                             user?.getIdToken(true)?.addOnCompleteListener { tokenTask ->
                                 if (tokenTask.isSuccessful) {
                                     val idToken: String? = tokenTask.result.token
-
-                                    // Aquí tienes el JWT completo
-                                    Log.d("OAUTH2", "Tu JWT es: $idToken")
-
-                                    // Buscar el TenantID en los claims
-                                    val tenantId = tokenTask.result.claims["tenant_id"] ?: "Sin Tenant"
-                                    Log.d("OAUTH2", "TenantID: $tenantId")
-
-                                    Toast.makeText(this, "Login Exitoso", Toast.LENGTH_SHORT).show()
                                     
-                                    irAlHome()
+                                    if (idToken != null) {
+                                        // Llamar al backend con el token de Firebase
+                                        llamarBackendLogin("Bearer $idToken")
+                                    } else {
+                                        Toast.makeText(this, "Error al obtener token", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                             }
                         } else {
@@ -65,9 +64,27 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun irAlHome() {
-        val intent = Intent(this, HomeActivity::class.java)
-        startActivity(intent)
-        finish()
+    private fun llamarBackendLogin(bearerToken: String) {
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.instance.login(bearerToken)
+                if (response.isSuccessful && response.body() != null) {
+                    val loginResponse = response.body()!!
+                    
+                    val intent = Intent(this@LoginActivity, HomeActivity::class.java).apply {
+                        putExtra("USER_TYPE", loginResponse.userType)
+                        putStringArrayListExtra("MODULOS", ArrayList(loginResponse.modulos ?: emptyList()))
+                    }
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Log.e("LOGIN", "Error backend: ${response.errorBody()?.string()}")
+                    Toast.makeText(this@LoginActivity, "Error en backend: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Log.e("LOGIN", "Error connecting to backend", e)
+                Toast.makeText(this@LoginActivity, "Error de conexión: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

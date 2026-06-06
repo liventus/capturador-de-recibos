@@ -49,81 +49,15 @@
             android:textColor="#666666"
             android:layout_marginTop="6dp" />
 
-        <GridLayout
+        <!-- Reemplaza el GridLayout antiguo por este RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvModulos"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:columnCount="2"
-            android:layout_marginTop="28dp">
-
-            <LinearLayout
-                android:id="@+id/cardRegistrarCompra"
-                android:layout_width="0dp"
-                android:layout_height="150dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="8dp"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@drawable/bg_card_home"
-                android:padding="12dp">
-
-                <TextView
-                    android:text="📄"
-                    android:textSize="34sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:text="Registrar compra"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:text="Agregar nueva compra"
-                    android:textSize="12sp"
-                    android:textColor="#777777"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/cardVerFacturas"
-                android:layout_width="0dp"
-                android:layout_height="150dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="8dp"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@drawable/bg_card_home"
-                android:padding="12dp">
-
-                <TextView
-                    android:text="🧾"
-                    android:textSize="34sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:text="Ver facturas"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:text="Listado de facturas"
-                    android:textSize="12sp"
-                    android:textColor="#777777"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-        </GridLayout>
+            android:layout_marginTop="28dp"
+            android:clipToPadding="false"
+            android:padding="4dp" />
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

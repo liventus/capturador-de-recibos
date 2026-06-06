@@ -59,4 +59,9 @@ dependencies {
     implementation("androidx.camera:camera-view:1.4.2")
     implementation("androidx.activity:activity-ktx:1.9.0")
     implementation("com.google.mlkit:text-recognition:16.0.1")
+
+    // con esto llamamos a apis externos
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.gson)
 }
