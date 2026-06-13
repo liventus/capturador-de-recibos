@@ -52,6 +52,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.14.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
 
 
     implementation("androidx.camera:camera-camera2:1.4.2")
