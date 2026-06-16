@@ -23,19 +23,21 @@ class HomeActivity : AppCompatActivity() {
 
         // Obtener datos del intent
         val userType = intent.getStringExtra("USER_TYPE") ?: "Invitado"
+        val roleTemporal = intent.getStringExtra("ROLE_TEMPORAL") ?: "N/A"
         val storeName = intent.getStringExtra("STORE_NAME") ?: "Sin Tienda"
         val uid = intent.getStringExtra("UID") ?: "Desconocido"
         val configSlug = intent.getStringExtra("CONFIG_SLUG") ?: "N/A"
         val modulos = intent.getStringArrayListExtra("MODULOS") ?: arrayListOf()
 
-        // Mostrar Tienda y Rol en el Toolbar
-        supportActionBar?.title = "$storeName - $userType"
+        // Mostrar Tienda y Rol en el Toolbar (incluimos roleTemporal si lo deseas)
+        supportActionBar?.title = "$storeName - $roleTemporal"
 
         // IMPRIMIR LOS TRES RESPONSES EN EL LOG (Datos extraídos del Intent)
         Log.d("HOME_DATA", "--- Datos de Sesión ---")
         Log.d("HOME_DATA", "Usuario (UID): $uid")
         Log.d("HOME_DATA", "Tienda (Slug): $configSlug")
         Log.d("HOME_DATA", "Tienda (Nombre): $storeName")
+        Log.d("HOME_DATA", "Rol Temporal: $roleTemporal")
         Log.d("HOME_DATA", "Rol Firestore: $userType")
         Log.d("HOME_DATA", "Módulos Firestore: $modulos")
         Log.d("HOME_DATA", "-----------------------")

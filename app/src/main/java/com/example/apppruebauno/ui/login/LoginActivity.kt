@@ -21,6 +21,8 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
 
+    private  var roleTemporal: String =""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -75,6 +77,7 @@ class LoginActivity : AppCompatActivity() {
                         tiendas.size == 1 -> {
                             val tiendaUnica = tiendas[0]
                             Log.d("LOGIN", "Tienda única detectada: ${tiendaUnica.tenantName}")
+                            roleTemporal = tiendaUnica.role
                             ejecutarChainLogin(bearerToken, tiendaUnica.tenantSlug, email)
                         }
                         tiendas.size > 1 -> {
@@ -102,6 +105,7 @@ class LoginActivity : AppCompatActivity() {
             .setTitle("Selecciona una Tienda")
             .setItems(nombres) { _, which ->
                 val slug = tiendas[which].tenantSlug
+                roleTemporal = tiendas[which].role
                 Log.d("LOGIN", "Tienda elegida Slug: $slug")
                 ejecutarChainLogin(bearerToken, slug, email)
             }
@@ -159,6 +163,7 @@ class LoginActivity : AppCompatActivity() {
 
                             val intent = Intent(this, HomeActivity::class.java).apply {
                                 putExtra("USER_TYPE", userType)
+                                putExtra("ROLE_TEMPORAL", roleTemporal) // Enviamos el roleTemporal
                                 putExtra("STORE_NAME", nombreTienda)
                                 putExtra("UID", uid)
                                 putExtra("CONFIG_SLUG", configSlug)
