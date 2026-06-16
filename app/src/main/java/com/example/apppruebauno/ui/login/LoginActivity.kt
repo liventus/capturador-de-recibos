@@ -166,6 +166,7 @@ class LoginActivity : AppCompatActivity() {
                                 putExtra("ROLE_TEMPORAL", roleTemporal) // Enviamos el roleTemporal
                                 putExtra("STORE_NAME", nombreTienda)
                                 putExtra("UID", uid)
+                                putExtra("EMAIL",email)
                                 putExtra("CONFIG_SLUG", configSlug)
                                 putStringArrayListExtra("MODULOS", ArrayList(listaModulos))
                             }

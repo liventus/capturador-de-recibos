@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -27,7 +28,12 @@ class HomeActivity : AppCompatActivity() {
         val storeName = intent.getStringExtra("STORE_NAME") ?: "Sin Tienda"
         val uid = intent.getStringExtra("UID") ?: "Desconocido"
         val configSlug = intent.getStringExtra("CONFIG_SLUG") ?: "N/A"
+        val email = intent.getStringExtra("EMAIL") ?: "email"
         val modulos = intent.getStringArrayListExtra("MODULOS") ?: arrayListOf()
+
+        // Actualizar mensaje de bienvenida con el email
+        val tvWelcomeMessage = findViewById<TextView>(R.id.tvWelcomeMessage)
+        tvWelcomeMessage.text = "$email"
 
         // Mostrar Tienda y Rol en el Toolbar (incluimos roleTemporal si lo deseas)
         supportActionBar?.title = "$storeName - $roleTemporal"
@@ -57,10 +63,6 @@ class HomeActivity : AppCompatActivity() {
             R.id.action_logout -> {
                 Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show()
                 finish()
-                true
-            }
-            R.id.action_settings -> {
-                Toast.makeText(this, "Configuración", Toast.LENGTH_SHORT).show()
                 true
             }
             else -> super.onOptionsItemSelected(item)
