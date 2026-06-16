@@ -45,7 +45,7 @@ class LoginActivity : AppCompatActivity() {
                                     val idToken = tokenTask.result.token
                                     if (idToken != null) {
                                         // Llamar al backend con el token de Firebase para traer tiendas
-                                        llamarBackendLogin("Bearer $idToken", email)
+                                        llamarBackendTenants("Bearer $idToken", email)
                                     } else {
                                         Toast.makeText(this, "Error al obtener token", Toast.LENGTH_SHORT).show()
                                     }
@@ -62,7 +62,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun llamarBackendLogin(bearerToken: String, email: String) {
+    private fun llamarBackendTenants(bearerToken: String, email: String) {
         lifecycleScope.launch {
             try {
                 // Obtenemos la lista de tiendas (tenants) del backend externo
@@ -71,11 +71,18 @@ class LoginActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     val tiendas = response.body()!!
                     
-                    if (tiendas.isNotEmpty()) {
-                        // Mostramos el diálogo de selección sin salir de la pantalla de login
-                        mostrarDialogoTiendas(tiendas, email)
-                    } else {
-                        Toast.makeText(this@LoginActivity, "No tienes tiendas asignadas", Toast.LENGTH_SHORT).show()
+                    when {
+                        tiendas.size == 1 -> {
+                            val tiendaUnica = tiendas[0]
+                            Log.d("LOGIN", "Tienda única detectada: ${tiendaUnica.tenantName}")
+                            ejecutarChainLogin(bearerToken, tiendaUnica.tenantSlug, email)
+                        }
+                        tiendas.size > 1 -> {
+                            mostrarDialogoTiendas(tiendas, bearerToken, email)
+                        }
+                        else -> {
+                            Toast.makeText(this@LoginActivity, "No tienes tiendas asignadas", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 } else {
                     Log.e("LOGIN", "Error backend: ${response.code()}")
@@ -88,26 +95,51 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun mostrarDialogoTiendas(tiendas: List<TenantResponse>, email: String) {
-        val nombres = tiendas.map { it.name }.toTypedArray()
+    private fun mostrarDialogoTiendas(tiendas: List<TenantResponse>, bearerToken: String, email: String) {
+        val nombres = tiendas.map { it.tenantName}.toTypedArray()
         
         AlertDialog.Builder(this)
             .setTitle("Selecciona una Tienda")
             .setItems(nombres) { _, which ->
-                val tiendaSeleccionada = tiendas[which].name
-                Log.d("LOGIN", "Tienda elegida: $tiendaSeleccionada")
-                
-                // Ahora buscamos el Rol y Módulos en Firestore
-                buscarPermisosFirestore(email, tiendaSeleccionada)
+                val slug = tiendas[which].tenantSlug
+                Log.d("LOGIN", "Tienda elegida Slug: $slug")
+                ejecutarChainLogin(bearerToken, slug, email)
             }
             .setCancelable(false)
             .show()
     }
 
-    private fun buscarPermisosFirestore(email: String, nombreTienda: String) {
+    private fun ejecutarChainLogin(bearerToken: String, slug: String, email: String) {
+        lifecycleScope.launch {
+            try {
+                // 1. Consumir /api/v1/me con el Slug en el header
+                val meResponse = RetrofitClient.instance.loginSlug(slug, bearerToken)
+                
+                // 2. Consumir /api/v1/config con el Slug en el header
+                val configResponse = RetrofitClient.instance.loginConfigTenant(slug, bearerToken)
+                
+                if (meResponse.isSuccessful && configResponse.isSuccessful) {
+                    val meData = meResponse.body()
+                    val configData = configResponse.body()
+                    
+                    Log.d("LOGIN_CHAIN", "Me data: $meData")
+                    Log.d("LOGIN_CHAIN", "Config data: $configData")
+                    
+                    // 3. Buscar el Rol y Módulos en Firestore
+                    buscarPermisosFirestore(email, meData?.tenant?.name ?: slug, meData?.uid, configData?.slug)
+                } else {
+                    Toast.makeText(this@LoginActivity, "Error en la configuración de la tienda", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Log.e("LOGIN_CHAIN", "Error en cadena: ${e.message}")
+                Toast.makeText(this@LoginActivity, "Error al configurar sesión", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun buscarPermisosFirestore(email: String, nombreTienda: String, uid: String?, configSlug: String?) {
         val db = FirebaseFirestore.getInstance()
         
-        // 1. Buscar el rol del usuario en la colección 'users'
         db.collection("users")
             .whereEqualTo("email", email)
             .get()
@@ -115,7 +147,6 @@ class LoginActivity : AppCompatActivity() {
                 if (!userDocs.isEmpty) {
                     val userType = userDocs.documents[0].getString("userType") ?: "GENERAL"
                     
-                    // 2. Buscar los módulos asociados a ese rol en la colección 'modulos'
                     db.collection("modulos")
                         .whereEqualTo("ROL", userType)
                         .get()
@@ -126,10 +157,11 @@ class LoginActivity : AppCompatActivity() {
                                 emptyList()
                             }
 
-                            // 3. Ir al HomeActivity con toda la información
                             val intent = Intent(this, HomeActivity::class.java).apply {
                                 putExtra("USER_TYPE", userType)
                                 putExtra("STORE_NAME", nombreTienda)
+                                putExtra("UID", uid)
+                                putExtra("CONFIG_SLUG", configSlug)
                                 putStringArrayListExtra("MODULOS", ArrayList(listaModulos))
                             }
                             startActivity(intent)
@@ -141,7 +173,6 @@ class LoginActivity : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 Log.e("FIRESTORE", "Error al cargar permisos", e)
-                Toast.makeText(this, "Error al cargar permisos de base de datos", Toast.LENGTH_SHORT).show()
             }
     }
 }

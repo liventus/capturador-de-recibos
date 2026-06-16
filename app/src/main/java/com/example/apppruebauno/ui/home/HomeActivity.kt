@@ -1,26 +1,19 @@
 package com.example.apppruebauno.ui.home
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.apppruebauno.R
-import com.example.apppruebauno.ui.factura.FacturaActivity
-import com.example.apppruebauno.ui.lista.ListaActivity
 
 class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
@@ -28,22 +21,28 @@ class HomeActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbarHome)
         setSupportActionBar(toolbar)
 
-        // Obtener datos del intent (Backend Cloud Run)
+        // Obtener datos del intent
         val userType = intent.getStringExtra("USER_TYPE") ?: "Invitado"
+        val storeName = intent.getStringExtra("STORE_NAME") ?: "Sin Tienda"
+        val uid = intent.getStringExtra("UID") ?: "Desconocido"
+        val configSlug = intent.getStringExtra("CONFIG_SLUG") ?: "N/A"
         val modulos = intent.getStringArrayListExtra("MODULOS") ?: arrayListOf()
 
+        // Mostrar Tienda y Rol en el Toolbar
+        supportActionBar?.title = "$storeName - $userType"
+
+        // IMPRIMIR LOS TRES RESPONSES EN EL LOG (Datos extraídos del Intent)
+        Log.d("HOME_DATA", "--- Datos de Sesión ---")
+        Log.d("HOME_DATA", "Usuario (UID): $uid")
+        Log.d("HOME_DATA", "Tienda (Slug): $configSlug")
+        Log.d("HOME_DATA", "Tienda (Nombre): $storeName")
+        Log.d("HOME_DATA", "Rol Firestore: $userType")
+        Log.d("HOME_DATA", "Módulos Firestore: $modulos")
+        Log.d("HOME_DATA", "-----------------------")
+
         val rvModulos = findViewById<RecyclerView>(R.id.rvModulos)
-
-        // Mostrar UserType en el Toolbar
-        supportActionBar?.title = userType
-
-        // Mostrar modulos en el Log
-        Log.d("HOME", "Módulos disponibles: $modulos")
-
         rvModulos.layoutManager = GridLayoutManager(this, 2)
         rvModulos.adapter = ModuloAdapter(modulos)
-
-        Log.d("HOME", "Módulos cargados en la interfaz: $modulos")
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
