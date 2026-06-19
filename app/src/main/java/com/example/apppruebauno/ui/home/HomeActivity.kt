@@ -44,17 +44,10 @@ class HomeActivity : AppCompatActivity() {
         // --- LÓGICA DE FILTRADO POR ROL USANDO EL JSON ---
         val menuCompleto = cargarConfiguracionMenu()
         
-        // Filtramos los items: buscamos la categoría que coincida con roleTemporal
-        // (Convertimos a mayúsculas para asegurar que coincida con el JSON)
+
         val itemsFiltrados = menuCompleto?.menu
             ?.find { it.categoria.equals(roleTemporal, ignoreCase = true) }
             ?.items ?: emptyList()
-
-        // IMPRIMIR DATOS EN EL LOG
-        Log.d("HOME_DATA", "--- Filtrado por Rol ---")
-        Log.d("HOME_DATA", "Rol detectado: $roleTemporal")
-        Log.d("HOME_DATA", "Items encontrados: ${itemsFiltrados.size}")
-        Log.d("HOME_DATA", "-----------------------")
 
         val rvModulos = findViewById<RecyclerView>(R.id.rvModulos)
         rvModulos.layoutManager = GridLayoutManager(this, 2)
