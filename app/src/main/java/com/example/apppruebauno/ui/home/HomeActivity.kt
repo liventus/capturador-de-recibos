@@ -8,12 +8,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.apppruebauno.R
-
+import com.example.apppruebauno.data.model.HomeItem
+import com.example.apppruebauno.data.model.MenuCategoria
 import com.example.apppruebauno.data.model.MenuConfig
-
 import com.google.gson.Gson
 
 class HomeActivity : AppCompatActivity() {
@@ -27,33 +25,52 @@ class HomeActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         // Obtener datos del intent
-        val userType = intent.getStringExtra("USER_TYPE") ?: "Invitado"
         val roleTemporal = intent.getStringExtra("ROLE_TEMPORAL") ?: "N/A"
         val storeName = intent.getStringExtra("STORE_NAME") ?: "Sin Tienda"
-        val uid = intent.getStringExtra("UID") ?: "Desconocido"
-        val configSlug = intent.getStringExtra("CONFIG_SLUG") ?: "N/A"
         val email = intent.getStringExtra("EMAIL") ?: "email"
 
-        // Actualizar mensaje de bienvenida con el email
-        val tvWelcomeMessage = findViewById<TextView>(R.id.tvWelcomeMessage)
-        tvWelcomeMessage.text = "$email"
+        // Actualizar mensaje de bienvenida
+        findViewById<TextView>(R.id.tvWelcomeMessage).text = "Hola, $email"
 
-        // Mostrar Tienda y Rol en el Toolbar
-        supportActionBar?.title = "$storeName - $roleTemporal"
-
-        // --- LÓGICA DE FILTRADO POR ROL USANDO EL JSON ---
+        // --- LÓGICA DE FILTRADO Y CATEGORÍA ---
         val menuCompleto = cargarConfiguracionMenu()
         
+        // Buscamos la categoría usando el ID técnico (ej: WAREHOUSE)
+        val categoriaEncontrada = menuCompleto?.menu?.find { 
+            it.id_categoria.equals(roleTemporal, ignoreCase = true) 
+        }
 
-        val itemsFiltrados = menuCompleto?.menu
-            ?.find { it.categoria.equals(roleTemporal, ignoreCase = true) }
-            ?.items ?: emptyList()
+        // Si lo encuentra, usamos el nombre amigable (ALMACENERO), si no, el original
+        val nombreMostrable = categoriaEncontrada?.categoria ?: roleTemporal
+        val itemsFiltrados = categoriaEncontrada?.items ?: emptyList()
 
-        val rvModulos = findViewById<RecyclerView>(R.id.rvModulos)
-        rvModulos.layoutManager = GridLayoutManager(this, 2)
-        
-        // Pasamos los items filtrados al adaptador
-        rvModulos.adapter = ModuloAdapter(itemsFiltrados)
+        // Mostrar Tienda como título y Rol como subtítulo
+        supportActionBar?.title = storeName
+        supportActionBar?.subtitle = nombreMostrable
+
+        // Cargar el Fragment de la lista por defecto
+        if (savedInstanceState == null) {
+            val listFragment = ModuloListFragment.newInstance(itemsFiltrados) { modulo ->
+                showModuloDetail(modulo)
+            }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, listFragment)
+                .commit()
+        }
+    }
+
+    private fun showModuloDetail(modulo: HomeItem) {
+        val detailFragment = ModuloDetailFragment.newInstance(modulo.titulo)
+        supportFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                android.R.anim.fade_in,
+                android.R.anim.fade_out,
+                android.R.anim.fade_in,
+                android.R.anim.fade_out,
+            )
+            .replace(R.id.fragment_container, detailFragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun cargarConfiguracionMenu(): MenuConfig? {

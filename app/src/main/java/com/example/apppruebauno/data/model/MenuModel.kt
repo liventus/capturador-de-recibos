@@ -6,6 +6,7 @@ data class MenuConfig(
 )
 
 data class MenuCategoria(
+    val id_categoria: String,
     val categoria: String,
     val items: List<HomeItem>
 )

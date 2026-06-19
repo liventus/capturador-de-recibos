@@ -2,6 +2,7 @@
   "app_name": "MotoStore",
   "menu": [
     {
+      "id_categoria": "ACCESO",
       "categoria": "ACCESO",
       "items": [
         {
@@ -12,6 +13,7 @@
       ]
     },
     {
+      "id_categoria": "WAREHOUSE",
       "categoria": "ALMACENERO",
       "items": [
         {
@@ -52,6 +54,7 @@
       ]
     },
     {
+      "id_categoria": "VENDEDOR",
       "categoria": "VENDEDOR",
       "items": [
         {
@@ -67,6 +70,7 @@
       ]
     },
     {
+      "id_categoria": "CREDITO",
       "categoria": "CRÉDITO",
       "items": [
         {
@@ -77,6 +81,7 @@
       ]
     },
     {
+      "id_categoria": "MANAGER",
       "categoria": "MANAGER",
       "items": [
         {
@@ -87,6 +92,7 @@
       ]
     },
     {
+      "id_categoria": "CAJERO",
       "categoria": "CAJERO",
       "items": [
         {
@@ -97,6 +103,7 @@
       ]
     },
     {
+      "id_categoria": "GENERAL",
       "categoria": "GENERAL",
       "items": [
         {

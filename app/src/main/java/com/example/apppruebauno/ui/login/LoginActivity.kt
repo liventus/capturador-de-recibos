@@ -14,7 +14,7 @@ import com.example.apppruebauno.data.model.TenantResponse
 import com.example.apppruebauno.data.network.RetrofitClient
 import com.example.apppruebauno.ui.home.HomeActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
@@ -129,8 +129,16 @@ class LoginActivity : AppCompatActivity() {
                     Log.d("LOGIN_CHAIN", "Me data: $meData")
                     Log.d("LOGIN_CHAIN", "Config data: $configData")
                     
-                    // 3. Buscar el Rol y Módulos en Firestore
-                    buscarPermisosFirestore(email, meData?.tenant?.name ?: slug, meData?.uid, configData?.slug)
+                    // Ya no usamos Firestore. Vamos directo al Home con la data de la API.
+                    val intent = Intent(this@LoginActivity, HomeActivity::class.java).apply {
+                        putExtra("ROLE_TEMPORAL", roleTemporal) // Usamos el rol que eligió al inicio
+                        putExtra("STORE_NAME", meData?.tenant?.name ?: slug)
+                        putExtra("UID", meData?.uid)
+                        putExtra("EMAIL", email)
+                        putExtra("CONFIG_SLUG", configData?.slug)
+                    }
+                    startActivity(intent)
+                    finish()
                 } else {
                     Toast.makeText(this@LoginActivity, "Error en la configuración de la tienda", Toast.LENGTH_SHORT).show()
                 }
@@ -141,44 +149,4 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun buscarPermisosFirestore(email: String, nombreTienda: String, uid: String?, configSlug: String?) {
-        val db = FirebaseFirestore.getInstance()
-        
-        db.collection("users")
-            .whereEqualTo("email", email)
-            .get()
-            .addOnSuccessListener { userDocs ->
-                if (!userDocs.isEmpty) {
-                    val userType = userDocs.documents[0].getString("userType") ?: "GENERAL"
-                    
-                    db.collection("modulos")
-                        .whereEqualTo("ROL", userType)
-                        .get()
-                        .addOnSuccessListener { moduloDocs ->
-                            val listaModulos = if (!moduloDocs.isEmpty) {
-                                moduloDocs.documents[0].get("MODULOS") as? List<String> ?: emptyList()
-                            } else {
-                                emptyList()
-                            }
-
-                            val intent = Intent(this, HomeActivity::class.java).apply {
-                                putExtra("USER_TYPE", userType)
-                                putExtra("ROLE_TEMPORAL", roleTemporal) // Enviamos el roleTemporal
-                                putExtra("STORE_NAME", nombreTienda)
-                                putExtra("UID", uid)
-                                putExtra("EMAIL",email)
-                                putExtra("CONFIG_SLUG", configSlug)
-                                putStringArrayListExtra("MODULOS", ArrayList(listaModulos))
-                            }
-                            startActivity(intent)
-                            finish()
-                        }
-                } else {
-                    Toast.makeText(this, "Usuario no configurado en Firestore", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("FIRESTORE", "Error al cargar permisos", e)
-            }
-    }
 }

@@ -9,8 +9,10 @@ import com.example.apppruebauno.R
 
 import com.example.apppruebauno.data.model.HomeItem
 
-class ModuloAdapter(private val modulos: List<HomeItem>) :
-    RecyclerView.Adapter<ModuloAdapter.ModuloViewHolder>() {
+class ModuloAdapter(
+    private val modulos: List<HomeItem>,
+    private val onItemClick: (HomeItem) -> Unit
+) : RecyclerView.Adapter<ModuloAdapter.ModuloViewHolder>() {
 
     class ModuloViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvIcono: TextView = view.findViewById(R.id.tvIconoModulo)
@@ -24,6 +26,8 @@ class ModuloAdapter(private val modulos: List<HomeItem>) :
 
     override fun onBindViewHolder(holder: ModuloViewHolder, position: Int) {
         val modulo = modulos[position]
+        
+        holder.itemView.setOnClickListener { onItemClick(modulo) }
 
         // Mapeo de icono de JSON -> Emoji (puedes cambiarlo después por Drawables)
         val emoji = when (modulo.icono) {
