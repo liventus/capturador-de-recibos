@@ -1,0 +1,110 @@
+{
+  "app_name": "MotoStore",
+  "menu": [
+    {
+      "categoria": "ACCESO",
+      "items": [
+        {
+          "id": "login_biometria",
+          "titulo": "Login + biometría",
+          "icono": "ic_fingerprint"
+        }
+      ]
+    },
+    {
+      "categoria": "ALMACENERO",
+      "items": [
+        {
+          "id": "home_turno",
+          "titulo": "Home del turno",
+          "icono": "ic_home"
+        },
+        {
+          "id": "scanner_vin",
+          "titulo": "Scanner VIN",
+          "icono": "ic_qr_code_scanner"
+        },
+        {
+          "id": "scanner_factura",
+          "titulo": "Scanner factura/guía",
+          "icono": "ic_document_scanner"
+        },
+        {
+          "id": "recepcion_motos",
+          "titulo": "Recepción de motos",
+          "icono": "ic_delivery"
+        },
+        {
+          "id": "cruce_guia_fisico",
+          "titulo": "Cruce guía vs. físico",
+          "icono": "ic_compare"
+        },
+        {
+          "id": "resumen_discrepancias",
+          "titulo": "Resumen discrepancias",
+          "icono": "ic_error_outline"
+        },
+        {
+          "id": "confirmar_traslado_gre",
+          "titulo": "Confirmar traslado GRE",
+          "icono": "ic_swap_horiz"
+        }
+      ]
+    },
+    {
+      "categoria": "VENDEDOR",
+      "items": [
+        {
+          "id": "cartera_dia",
+          "titulo": "Mi cartera del día",
+          "icono": "ic_wallet"
+        },
+        {
+          "id": "captura_lead",
+          "titulo": "Captura de lead",
+          "icono": "ic_person_add"
+        }
+      ]
+    },
+    {
+      "categoria": "CRÉDITO",
+      "items": [
+        {
+          "id": "revisar_documento",
+          "titulo": "Revisar documento",
+          "icono": "ic_description"
+        }
+      ]
+    },
+    {
+      "categoria": "MANAGER",
+      "items": [
+        {
+          "id": "aprobacion_biometrica",
+          "titulo": "Aprobación biométrica",
+          "icono": "ic_verified_user"
+        }
+      ]
+    },
+    {
+      "categoria": "CAJERO",
+      "items": [
+        {
+          "id": "pos_movil",
+          "titulo": "POS móvil",
+          "icono": "ic_payment"
+        }
+      ]
+    },
+    {
+      "categoria": "GENERAL",
+      "items": [
+        {
+          "id": "notificaciones",
+          "titulo": "Notificaciones",
+          "icono": "ic_notifications"
+        }
+      ]
+    }
+  ]
+}

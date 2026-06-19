@@ -12,6 +12,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.apppruebauno.R
 
+import com.example.apppruebauno.data.model.MenuConfig
+
+import com.google.gson.Gson
+
 class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,28 +33,46 @@ class HomeActivity : AppCompatActivity() {
         val uid = intent.getStringExtra("UID") ?: "Desconocido"
         val configSlug = intent.getStringExtra("CONFIG_SLUG") ?: "N/A"
         val email = intent.getStringExtra("EMAIL") ?: "email"
-        val modulos = intent.getStringArrayListExtra("MODULOS") ?: arrayListOf()
 
         // Actualizar mensaje de bienvenida con el email
         val tvWelcomeMessage = findViewById<TextView>(R.id.tvWelcomeMessage)
         tvWelcomeMessage.text = "$email"
 
-        // Mostrar Tienda y Rol en el Toolbar (incluimos roleTemporal si lo deseas)
+        // Mostrar Tienda y Rol en el Toolbar
         supportActionBar?.title = "$storeName - $roleTemporal"
 
-        // IMPRIMIR LOS TRES RESPONSES EN EL LOG (Datos extraídos del Intent)
-        Log.d("HOME_DATA", "--- Datos de Sesión ---")
-        Log.d("HOME_DATA", "Usuario (UID): $uid")
-        Log.d("HOME_DATA", "Tienda (Slug): $configSlug")
-        Log.d("HOME_DATA", "Tienda (Nombre): $storeName")
-        Log.d("HOME_DATA", "Rol Temporal: $roleTemporal")
-        Log.d("HOME_DATA", "Rol Firestore: $userType")
-        Log.d("HOME_DATA", "Módulos Firestore: $modulos")
+        // --- LÓGICA DE FILTRADO POR ROL USANDO EL JSON ---
+        val menuCompleto = cargarConfiguracionMenu()
+        
+        // Filtramos los items: buscamos la categoría que coincida con roleTemporal
+        // (Convertimos a mayúsculas para asegurar que coincida con el JSON)
+        val itemsFiltrados = menuCompleto?.menu
+            ?.find { it.categoria.equals(roleTemporal, ignoreCase = true) }
+            ?.items ?: emptyList()
+
+        // IMPRIMIR DATOS EN EL LOG
+        Log.d("HOME_DATA", "--- Filtrado por Rol ---")
+        Log.d("HOME_DATA", "Rol detectado: $roleTemporal")
+        Log.d("HOME_DATA", "Items encontrados: ${itemsFiltrados.size}")
         Log.d("HOME_DATA", "-----------------------")
 
         val rvModulos = findViewById<RecyclerView>(R.id.rvModulos)
         rvModulos.layoutManager = GridLayoutManager(this, 2)
-        rvModulos.adapter = ModuloAdapter(modulos)
+        
+        // Pasamos los items filtrados al adaptador
+        rvModulos.adapter = ModuloAdapter(itemsFiltrados)
+    }
+
+    private fun cargarConfiguracionMenu(): MenuConfig? {
+        return try {
+            val jsonString = resources.openRawResource(R.raw.reglas)
+                .bufferedReader()
+                .use { it.readText() }
+            Gson().fromJson(jsonString, MenuConfig::class.java)
+        } catch (e: Exception) {
+            Log.e("HOME_DATA", "Error al cargar reglas.json", e)
+            null
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
