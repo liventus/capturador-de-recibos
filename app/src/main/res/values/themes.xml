@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Apppruebauno" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <item name="android:statusBarColor">#5E35B1</item>
-        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">#FAF8FF</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.Apppruebauno" parent="Base.Theme.Apppruebauno" />
