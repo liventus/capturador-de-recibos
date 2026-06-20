@@ -48,14 +48,23 @@ class HomeActivity : AppCompatActivity() {
         supportActionBar?.title = storeName
         supportActionBar?.subtitle = nombreMostrable
 
-        // Cargar el Fragment de la lista por defecto
+        // Cargar el Fragment por defecto
         if (savedInstanceState == null) {
-            val listFragment = ModuloListFragment.newInstance(itemsFiltrados) { modulo ->
-                showModuloDetail(modulo)
+            if (roleTemporal.equals("WAREHOUSE", ignoreCase = true)) {
+                // Si es Almacenero, vamos directo al detalle que tiene el nuevo diseño
+                val detailFragment = ModuloDetailFragment.newInstance(nombreMostrable)
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, detailFragment)
+                    .commit()
+            } else {
+                // Para otros roles, mostramos la lista de módulos
+                val listFragment = ModuloListFragment.newInstance(itemsFiltrados) { modulo ->
+                    showModuloDetail(modulo)
+                }
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, listFragment)
+                    .commit()
             }
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, listFragment)
-                .commit()
         }
     }
 

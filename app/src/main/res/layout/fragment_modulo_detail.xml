@@ -166,6 +166,7 @@
 
             <!-- Scanner VIN -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardScannerVin"
                 android:layout_width="0dp"
                 android:layout_height="160dp"
                 android:layout_columnWeight="1"
@@ -215,6 +216,7 @@
 
             <!-- Scanner Factura -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardScannerFactura"
                 android:layout_width="0dp"
                 android:layout_height="160dp"
                 android:layout_columnWeight="1"
@@ -264,6 +266,7 @@
 
             <!-- Inventario -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardInventario"
                 android:layout_width="0dp"
                 android:layout_height="160dp"
                 android:layout_columnWeight="1"
@@ -313,6 +316,7 @@
 
             <!-- Historial -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardHistorial"
                 android:layout_width="0dp"
                 android:layout_height="160dp"
                 android:layout_columnWeight="1"
