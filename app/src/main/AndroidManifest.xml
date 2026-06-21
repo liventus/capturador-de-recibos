@@ -27,6 +27,9 @@
         <activity android:name=".ui.home.HomeActivity" />
         <activity android:name=".ui.factura.FacturaActivity" />
         <activity android:name=".ui.lista.ListaActivity" />
+        <activity android:name=".ui.scanner.ScannerVinActivity" />
+        <activity android:name=".ui.scanner.ScannerFacturaActivity" />
+        <activity android:name=".ui.scanner.RecepcionMotoActivity" />
 
     </application>
 

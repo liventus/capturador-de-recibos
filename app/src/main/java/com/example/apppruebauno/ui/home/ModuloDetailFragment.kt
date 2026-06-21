@@ -25,7 +25,34 @@ class ModuloDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Por ahora cargamos el layout estático que creamos basado en la imagen
         return inflater.inflate(R.layout.fragment_modulo_detail, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        view.findViewById<View>(R.id.cardScannerVin)?.setOnClickListener {
+            val intent = android.content.Intent(requireContext(), com.example.apppruebauno.ui.scanner.ScannerVinActivity::class.java)
+            startActivity(intent)
+        }
+
+        view.findViewById<View>(R.id.cardScannerFactura)?.setOnClickListener {
+            val intent = android.content.Intent(requireContext(), com.example.apppruebauno.ui.scanner.ScannerFacturaActivity::class.java)
+            startActivity(intent)
+        }
+
+        view.findViewById<View>(R.id.cardInventario)?.setOnClickListener {
+            android.widget.Toast.makeText(requireContext(), "Inventario próximamente", android.widget.Toast.LENGTH_SHORT).show()
+        }
+
+        view.findViewById<View>(R.id.cardHistorial)?.setOnClickListener {
+            android.widget.Toast.makeText(requireContext(), "Historial próximamente", android.widget.Toast.LENGTH_SHORT).show()
+        }
+
+        view.findViewById<View>(R.id.btnRecibirMotos)?.setOnClickListener {
+            // El botón naranja también puede llevar a la recepción
+            val intent = android.content.Intent(requireContext(), com.example.apppruebauno.ui.scanner.ScannerVinActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
