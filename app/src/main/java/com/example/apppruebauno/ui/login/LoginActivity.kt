@@ -8,8 +8,9 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import com.example.apppruebauno.R
+import com.example.apppruebauno.data.auth.AuthRepository
 import com.example.apppruebauno.data.model.TenantResponse
 import com.example.apppruebauno.data.network.RetrofitClient
 import com.example.apppruebauno.ui.home.HomeActivity
@@ -19,134 +20,78 @@ import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
-
-    private  var roleTemporal: String =""
+    private lateinit var viewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        
-        auth = FirebaseAuth.getInstance()
+
+        // 1. INICIALIZACIÓN (Esto se puede mejorar luego con Hilt)
+        val auth = FirebaseAuth.getInstance()
+        val apiService = RetrofitClient.instance
+        val repository = AuthRepository(auth, apiService)
+        val factory = LoginViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, factory)[LoginViewModel::class.java]
 
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val etUsuario = findViewById<EditText>(R.id.etUsuario)
         val etPassword = findViewById<EditText>(R.id.etPassword)
 
+        // 2. LA ACCIÓN: Solo avisamos al ViewModel
         btnLogin.setOnClickListener {
             val email = etUsuario.text.toString().trim()
-            val password = etPassword.text.toString().trim()
-            
-            if (email.isNotEmpty() && password.isNotEmpty()) {
-                auth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this) { task ->
-                        if (task.isSuccessful) {
-                            val user = auth.currentUser
-                            user?.getIdToken(true)?.addOnCompleteListener { tokenTask ->
-                                if (tokenTask.isSuccessful) {
-                                    val idToken = tokenTask.result.token
-                                    if (idToken != null) {
-                                        // Llamar al backend con el token de Firebase para traer tiendas
-                                        llamarBackendTenants("Bearer $idToken", email)
-                                    } else {
-                                        Toast.makeText(this, "Error al obtener token", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                            }
-                        } else {
-                            Log.e("LOGIN", "Error: ${task.exception?.message}")
-                            Toast.makeText(this, "Error de login: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-            } else {
-                Toast.makeText(this, "Por favor, completa los campos", Toast.LENGTH_SHORT).show()
-            }
+            val pass = etPassword.text.toString().trim()
+            viewModel.onLoginClicked(email, pass)
         }
+
+        // 3. LA MAGIA: Observamos el estado (Aquí aplicamos SRP)
+        setupObservers()
     }
 
-    private fun llamarBackendTenants(bearerToken: String, email: String) {
-        lifecycleScope.launch {
-            try {
-                // Obtenemos la lista de tiendas (tenants) del backend externo
-                val response = RetrofitClient.instance.login(bearerToken)
-                
-                if (response.isSuccessful && response.body() != null) {
-                    val tiendas = response.body()!!
-                    
-                    when {
-                        tiendas.size == 1 -> {
-                            val tiendaUnica = tiendas[0]
-                            Log.d("LOGIN", "Tienda única detectada: ${tiendaUnica.tenantName}")
-                            roleTemporal = tiendaUnica.role
-                            ejecutarChainLogin(bearerToken, tiendaUnica.tenantSlug, email)
-                        }
-                        tiendas.size > 1 -> {
-                            mostrarDialogoTiendas(tiendas, bearerToken, email)
-                        }
-                        else -> {
-                            Toast.makeText(this@LoginActivity, "No tienes tiendas asignadas", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                } else {
-                    Log.e("LOGIN", "Error backend: ${response.code()}")
-                    Toast.makeText(this@LoginActivity, "Error al obtener tiendas", Toast.LENGTH_SHORT).show()
+    private fun setupObservers() {
+        viewModel.state.observe(this) { state ->
+            when (state) {
+                is LoginViewModel.LoginState.Loading -> {
+                    // Mostrar un ProgressBar
                 }
-            } catch (e: Exception) {
-                Log.e("LOGIN", "Error de conexión", e)
-                Toast.makeText(this@LoginActivity, "Error de conexión: ${e.message}", Toast.LENGTH_SHORT).show()
+                is LoginViewModel.LoginState.Error -> {
+                    Toast.makeText(this, state.message, Toast.LENGTH_SHORT).show()
+                }
+                is LoginViewModel.LoginState.SelectTenant -> {
+                    // Llamamos a la función que muestra el diálogo
+                    mostrarDialogoTiendas(state.tiendas, state.token, state.email)
+                }
+                is LoginViewModel.LoginState.Success -> {
+                    // Navegamos al Home
+                    navigateToHome(state)
+                }
+                else -> {}
             }
         }
     }
 
-    private fun mostrarDialogoTiendas(tiendas: List<TenantResponse>, bearerToken: String, email: String) {
-        val nombres = tiendas.map { it.tenantName}.toTypedArray()
-        
+    private fun mostrarDialogoTiendas(tiendas: List<TenantResponse>, token: String, email: String) {
+        val nombres = tiendas.map { it.tenantName }.toTypedArray()
         AlertDialog.Builder(this)
             .setTitle("Selecciona una Tienda")
             .setItems(nombres) { _, which ->
-                val slug = tiendas[which].tenantSlug
-                roleTemporal = tiendas[which].role
-                Log.d("LOGIN", "Tienda elegida Slug: $slug")
-                ejecutarChainLogin(bearerToken, slug, email)
+                val tiendaSeleccionada = tiendas[which]
+                // Avisamos al ViewModel de la elección
+                viewModel.selectTenant(tiendaSeleccionada.tenantSlug, token, tiendaSeleccionada.role, email)
             }
             .setCancelable(false)
             .show()
     }
 
-    private fun ejecutarChainLogin(bearerToken: String, slug: String, email: String) {
-        lifecycleScope.launch {
-            try {
-                // 1. Consumir /api/v1/me con el Slug en el header
-                val meResponse = RetrofitClient.instance.loginSlug(slug, bearerToken)
-                
-                // 2. Consumir /api/v1/config con el Slug en el header
-                val configResponse = RetrofitClient.instance.loginConfigTenant(slug, bearerToken)
-                
-                if (meResponse.isSuccessful && configResponse.isSuccessful) {
-                    val meData = meResponse.body()
-                    val configData = configResponse.body()
-                    
-                    Log.d("LOGIN_CHAIN", "Me data: $meData")
-                    Log.d("LOGIN_CHAIN", "Config data: $configData")
-                    
-                    // Ya no usamos Firestore. Vamos directo al Home con la data de la API.
-                    val intent = Intent(this@LoginActivity, HomeActivity::class.java).apply {
-                        putExtra("ROLE_TEMPORAL", roleTemporal) // Usamos el rol que eligió al inicio
-                        putExtra("STORE_NAME", meData?.tenant?.name ?: slug)
-                        putExtra("UID", meData?.uid)
-                        putExtra("EMAIL", email)
-                        putExtra("CONFIG_SLUG", configData?.slug)
-                    }
-                    startActivity(intent)
-                    finish()
-                } else {
-                    Toast.makeText(this@LoginActivity, "Error en la configuración de la tienda", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                Log.e("LOGIN_CHAIN", "Error en cadena: ${e.message}")
-                Toast.makeText(this@LoginActivity, "Error al configurar sesión", Toast.LENGTH_SHORT).show()
-            }
+    private fun navigateToHome(data: LoginViewModel.LoginState.Success) {
+        val intent = Intent(this, HomeActivity::class.java).apply {
+            putExtra("ROLE_TEMPORAL", data.role)
+            putExtra("STORE_NAME", data.storeName)
+            putExtra("UID", data.uid)
+            putExtra("EMAIL", data.email)
+            putExtra("CONFIG_SLUG", data.configSlug)
         }
+        startActivity(intent)
+        finish()
     }
-
 }
