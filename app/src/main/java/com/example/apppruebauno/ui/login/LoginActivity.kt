@@ -2,7 +2,6 @@ package com.example.apppruebauno.ui.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -15,8 +14,6 @@ import com.example.apppruebauno.data.model.TenantResponse
 import com.example.apppruebauno.data.network.RetrofitClient
 import com.example.apppruebauno.ui.home.HomeActivity
 import com.google.firebase.auth.FirebaseAuth
-
-import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 

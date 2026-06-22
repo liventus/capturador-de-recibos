@@ -30,6 +30,8 @@
         <activity android:name=".ui.scanner.ScannerVinActivity" />
         <activity android:name=".ui.scanner.ScannerFacturaActivity" />
         <activity android:name=".ui.scanner.RecepcionMotoActivity" />
+        <activity android:name=".ui.inventory.InventoryActivity" />
+        <activity android:name=".ui.discrepancy.DiscrepancyActivity" />
 
     </application>
 

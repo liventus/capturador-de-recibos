@@ -42,11 +42,13 @@ class ModuloDetailFragment : Fragment() {
         }
 
         view.findViewById<View>(R.id.cardInventario)?.setOnClickListener {
-            android.widget.Toast.makeText(requireContext(), "Inventario próximamente", android.widget.Toast.LENGTH_SHORT).show()
+            val intent = android.content.Intent(requireContext(), com.example.apppruebauno.ui.inventory.InventoryActivity::class.java)
+            startActivity(intent)
         }
 
         view.findViewById<View>(R.id.cardHistorial)?.setOnClickListener {
-            android.widget.Toast.makeText(requireContext(), "Historial próximamente", android.widget.Toast.LENGTH_SHORT).show()
+            val intent = android.content.Intent(requireContext(), com.example.apppruebauno.ui.discrepancy.DiscrepancyActivity::class.java)
+            startActivity(intent)
         }
 
         view.findViewById<View>(R.id.btnRecibirMotos)?.setOnClickListener {
