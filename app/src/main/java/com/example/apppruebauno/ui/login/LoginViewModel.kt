@@ -24,7 +24,8 @@ class LoginViewModel(private val repository: AuthRepository) : ViewModel() {
             val role: String?,
             val storeName: String?,
             val uid: String?,
-            val configSlug: String?
+            val configSlug: String?,
+            val token: String // Agregado para biometría
         ) : LoginState()
         data class SelectTenant(val tiendas: List<TenantResponse>, val token: String, val email: String) : LoginState()
     }
@@ -44,27 +45,40 @@ class LoginViewModel(private val repository: AuthRepository) : ViewModel() {
             try {
                 val token = repository.signIn(email, pass)
                 if (token != null) {
-                    val response = repository.getTenants(token)
-                    if (response.isSuccessful && response.body() != null) {
-                        val tiendas = response.body()!!
-
-                        if (tiendas.size == 1) {
-                            // Si solo hay una, ejecutamos la cadena automáticamente
-                            val tiendaUnica = tiendas[0]
-                            selectTenant(tiendaUnica.tenantSlug, token, tiendaUnica.role, email)
-                        } else {
-                            // Si hay varias, pedimos selección
-                            _state.value = LoginState.SelectTenant(tiendas, token, email)
-                        }
-                    } else {
-                        _state.value = LoginState.Error("No se pudieron obtener las tiendas")
-                    }
+                    processToken(token, email)
                 } else {
                     _state.value = LoginState.Error("Error de autenticación")
                 }
             } catch (e: Exception) {
                 _state.value = LoginState.Error(e.message ?: "Error desconocido")
             }
+        }
+    }
+
+    fun onBiometricLogin(token: String, email: String) {
+        _state.value = LoginState.Loading
+        viewModelScope.launch {
+            try {
+                processToken(token, email)
+            } catch (e: Exception) {
+                _state.value = LoginState.Error("Error en autenticación biométrica")
+            }
+        }
+    }
+
+    private suspend fun processToken(token: String, email: String) {
+        val response = repository.getTenants(token)
+        if (response.isSuccessful && response.body() != null) {
+            val tiendas = response.body()!!
+
+            if (tiendas.size == 1) {
+                val tiendaUnica = tiendas[0]
+                selectTenant(tiendaUnica.tenantSlug, token, tiendaUnica.role, email)
+            } else {
+                _state.value = LoginState.SelectTenant(tiendas, token, email)
+            }
+        } else {
+            _state.value = LoginState.Error("No se pudieron obtener las tiendas")
         }
     }
 
@@ -81,7 +95,8 @@ class LoginViewModel(private val repository: AuthRepository) : ViewModel() {
                         role = role,
                         storeName = meResponse.body()?.tenant?.name ?: slug,
                         uid = meResponse.body()?.uid,
-                        configSlug = configResponse.body()?.slug
+                        configSlug = configResponse.body()?.slug,
+                        token = token
                     )
                 } else {
                     _state.value = LoginState.Error("Error al configurar la tienda")

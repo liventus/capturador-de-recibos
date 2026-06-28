@@ -117,7 +117,13 @@
                 android:textStyle="bold"
                 android:textColor="#5E35B1"/>
         </LinearLayout>
-
+        <ImageButton
+            android:id="@+id/btnBiometric"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_fingerprint"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:visibility="gone" /> <!-- Solo visible si ya hay una cuenta guardada -->
     </LinearLayout>
 
 </ScrollView>

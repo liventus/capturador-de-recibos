@@ -61,6 +61,10 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.9.0")
     implementation("com.google.mlkit:text-recognition:16.0.1")
 
+    // Dependencias de Biometría y Seguridad
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
     // con esto llamamos a apis externos
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
