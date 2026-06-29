@@ -69,6 +69,18 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun showModuloDetail(modulo: HomeItem) {
+        if (modulo.id == "cartera_dia") {
+            val intent = android.content.Intent(this, com.example.apppruebauno.ui.wallet.WalletActivity::class.java)
+            startActivity(intent)
+            return
+        }
+
+        if (modulo.id == "captura_lead") {
+            val intent = android.content.Intent(this, com.example.apppruebauno.ui.lead.RegisterLeadActivity::class.java)
+            startActivity(intent)
+            return
+        }
+
         val detailFragment = ModuloDetailFragment.newInstance(modulo.titulo)
         supportFragmentManager.beginTransaction()
             .setCustomAnimations(

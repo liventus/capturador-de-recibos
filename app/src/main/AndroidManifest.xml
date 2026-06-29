@@ -32,6 +32,9 @@
         <activity android:name=".ui.scanner.RecepcionMotoActivity" />
         <activity android:name=".ui.inventory.InventoryActivity" />
         <activity android:name=".ui.discrepancy.DiscrepancyActivity" />
+        <activity android:name=".ui.wallet.WalletActivity" />
+        <activity android:name=".ui.wallet.WalletDetailActivity" />
+        <activity android:name=".ui.lead.RegisterLeadActivity" />
 
     </application>
 

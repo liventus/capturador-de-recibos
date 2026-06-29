@@ -1,0 +1,75 @@
+package com.example.apppruebauno.ui.lead
+
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.EditText
+import androidx.camera.core.*
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import com.example.apppruebauno.R
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+
+class Step2GuarantorFragment : Fragment() {
+    private lateinit var previewView: PreviewView
+    private lateinit var etDni: EditText
+    private lateinit var cameraExecutor: ExecutorService
+    private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_step2_guarantor, container, false)
+        previewView = view.findViewById(R.id.previewViewDniGuarantor)
+        etDni = view.findViewById(R.id.etDniGuarantor)
+        cameraExecutor = Executors.newSingleThreadExecutor()
+        startCamera()
+        return view
+    }
+
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
+        cameraProviderFuture.addListener({
+            val cameraProvider = cameraProviderFuture.get()
+            val preview = Preview.Builder().build().also { it.setSurfaceProvider(previewView.surfaceProvider) }
+            val imageAnalyzer = ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build()
+                .also { it.setAnalyzer(cameraExecutor) { imageProxy -> processImageProxy(imageProxy) } }
+            try {
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(this, CameraSelector.DEFAULT_BACK_CAMERA, preview, imageAnalyzer)
+            } catch (e: Exception) {}
+        }, ContextCompat.getMainExecutor(requireContext()))
+    }
+
+    @SuppressLint("UnsafeOptInUsageError")
+    private fun processImageProxy(imageProxy: ImageProxy) {
+        val mediaImage = imageProxy.image
+        if (mediaImage != null) {
+            val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+            recognizer.process(image)
+                .addOnSuccessListener { visionText ->
+                    val dniPattern = Regex("\\b\\d{8}\\b")
+                    val match = dniPattern.find(visionText.text)
+                    if (match != null) {
+                        activity?.runOnUiThread { if (etDni.text.isEmpty()) etDni.setText(match.value) }
+                    }
+                }
+                .addOnCompleteListener { imageProxy.close() }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        cameraExecutor.shutdown()
+    }
+}

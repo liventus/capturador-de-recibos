@@ -59,12 +59,12 @@
       "items": [
         {
           "id": "cartera_dia",
-          "titulo": "Mi cartera del día",
+          "titulo": "Mis clientes",
           "icono": "ic_wallet"
         },
         {
           "id": "captura_lead",
-          "titulo": "Captura de lead",
+          "titulo": "Registrar cliente",
           "icono": "ic_person_add"
         }
       ]
@@ -81,8 +81,8 @@
       ]
     },
     {
-      "id_categoria": "MANAGER",
-      "categoria": "MANAGER",
+      "id_categoria": "ADVISOR",
+      "categoria": "ASESOR",
       "items": [
         {
           "id": "aprobacion_biometrica",

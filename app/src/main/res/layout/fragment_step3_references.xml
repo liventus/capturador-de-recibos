@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Referencias Personales"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+    <!-- Campos de referencia 1 -->
+    <EditText android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Referencia 1: Nombre" android:layout_marginTop="16dp"/>
+    <EditText android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Referencia 1: Teléfono" android:inputType="phone"/>
+    <EditText android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Referencia 1: Parentesco"/>
+    <!-- Campos de referencia 2 -->
+    <EditText android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Referencia 2: Nombre" android:layout_marginTop="16dp"/>
+    <EditText android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Referencia 2: Teléfono" android:inputType="phone"/>
+</LinearLayout>
